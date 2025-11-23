@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hair Hustler - My Bookings</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Body & dark theme */
+        body {
+            background: #121212;
+            color: #eee;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background: #1f1f1f;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 1.8em;
+            color: #ffcc00;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+
+        nav ul li a {
+            color: #eee;
+            text-decoration: none;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        nav ul li a:hover {
+            color: #ffcc00;
+        }
+
+        /* Hamburger */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            gap: 5px;
+        }
+
+        .hamburger div {
+            width: 25px;
+            height: 3px;
+            background: #eee;
+        }
+
+        /* Container */
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffcc00;
+        }
+
+        /* Booking card */
+        .barber-card {
+            background: #1e1e1e;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .barber-card h3 {
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+
+        .barber-card p {
+            margin-bottom: 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                flex-direction: column;
+                display: none;
+                background: #1f1f1f;
+                position: absolute;
+                top: 60px;
+                right: 0;
+                width: 200px;
+                padding: 10px;
+                border-radius: 0 0 10px 10px;
+            }
+
+            nav ul.show {
+                display: flex;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Hair Hustler</h1>
+        <div class="hamburger">
+            <div></div><div></div><div></div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="barbers.html">Back to Barbers</a></li>
+                <li><a href="index.html">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>My Bookings</h2>
+        <div id="bookings-container"></div>
+    </div>
+
+    <script>
+        // Hamburger toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('nav ul');
+
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('show');
+        });
+
+        // Fetch user bookings
+        async function fetchBookings() {
+            const user_id = 1; // Replace with logged-in user ID
+            try {
+                const res = await fetch(`http://localhost:3000/mybookings/${user_id}`);
+                const bookings = await res.json();
+
+                const container = document.getElementById('bookings-container');
+                container.innerHTML = '';
+
+                bookings.forEach(b => {
+                    const div = document.createElement('div');
+                    div.className = 'barber-card';
+                    div.innerHTML = `
+                        <h3>${b.barber_name}</h3>
+                        <p><strong>Service:</strong> ${b.service}</p>
+                        <p><strong>Date:</strong> ${b.date}</p>
+                        <p><strong>Time:</strong> ${b.time}</p>
+                        <p><strong>Location:</strong> ${b.location || 'Shop'}</p>
+                        <p><strong>Status:</strong> ${b.status}</p>
+                        <p><strong>Barber Phone:</strong> ${b.barber_phone}</p>
+                    `;
+                    container.appendChild(div);
+                });
+            } catch (err) {
+                alert('Unable to fetch bookings. Server may be down.');
+            }
+        }
+
+        fetchBookings();
+    </script>
+</body>
+</html>
